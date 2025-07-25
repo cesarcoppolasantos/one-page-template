@@ -34,8 +34,8 @@ const Navbar: React.FC = () => {
         {/* Left: Logo */}
         <div className="flex items-center text-font-logo flex-shrink-0 w-[140px] md:w-[180px]">
           <Link href="#" aria-label="Homepage" tabIndex={0} className="flex items-center gap-2 font-bold text-xl text-font-logo">
-            <img src="#" alt="MyApp Logo" className="w-8 h-8 object-contain" />
-            <span>MyApp</span>
+            <img src="/logo.svg" alt="MyApp Logo" className="w-16 h-16 object-contain" />
+            <span className="mt-3">MyApp</span>
             <span className="sr-only">Logo</span>
           </Link>
         </div>

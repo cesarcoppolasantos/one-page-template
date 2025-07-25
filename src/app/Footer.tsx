@@ -28,11 +28,11 @@ const Footer = () => (
       {/* Logo and Copyright */}
       <div className="flex flex-col items-center w-full md:w-auto">
         <div className="flex items-center gap-2 font-bold text-xl text-font-logo justify-center">
-          <a href="#" aria-label="Scroll to top of page" className="flex items-center gap-2 rounded" onClick={handleLogoClick}>
-            <img src="/logo.png" alt="MyApp Logo" className="w-8 h-8 object-contain" />
-            <span>MyApp</span>
-          </a>
-          <span className="sr-only">Logo</span>
+          <Link href="#" aria-label="Homepage" tabIndex={0} className="flex items-center gap-2 font-bold text-xl text-font-logo" onClick={handleLogoClick}>
+            <img src="/logo.svg" alt="MyApp Logo" className="w-16 h-16 object-contain" />
+            <span className="mt-3">MyApp</span>
+            <span className="sr-only">Logo</span>
+          </Link>
         </div>
         <div className="text-font-primary text-sm text-center mt-1">
           © 2025 <a href="#" onClick={handleLogoClick} className="text-menu-hover hover:underline hover:text-button-primary" aria-label="Scroll to top of page">MyApp</a>. All rights reserved.
