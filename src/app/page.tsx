@@ -1,5 +1,26 @@
+'use client';
+
+import { Plan, FAQ } from '@/types';
+import { useEffect } from 'react';
+
 export default function Home() {
-  const plans = [
+  useEffect(() => {
+    // Handle hash navigation when page loads
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.replace('#', '');
+        const element = document.getElementById(id);
+        if (element) {
+          // Small delay to ensure the page is fully loaded
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
+      }
+    }
+  }, []);
+  const plans: Plan[] = [
     {
       name: 'Basic',
       price: '$9',
@@ -15,7 +36,7 @@ export default function Home() {
     },
   ];
 
-  const faqs = [
+  const faqs: FAQ[] = [
     {
       question: 'Question 1',
       answer: 'Answer 1'
