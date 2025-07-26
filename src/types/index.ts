@@ -3,6 +3,7 @@ export interface FormData {
   signerName: string;
   isAnonymous: boolean;
   recipientName: string;
+  email: string;
   image: File | null;
   text: string;
 }
