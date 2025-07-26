@@ -5,10 +5,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { MenuItem } from "@/types";
 
 const menuItems: MenuItem[] = [
+  { name: "Create Page", href: "/form" },
   { name: "Examples", href: "#examples" },
   { name: "Pricing", href: "#pricing" },
   { name: "FAQ", href: "#faq" },
-  { name: "Create Document", href: "/form" },
+  
 ];
 
 const Navbar: React.FC = () => {
@@ -54,9 +55,11 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="w-fullbg-background border-b border-b-secondary">
+    <nav className="w-full bg-gradient-to-l from-purple-900 to-gray-900 relative">
       {/* Navbar Bar */}
       <div className="relative mx-auto flex max-w-7xl items-center px-4 py-3 md:py-4">
+        {/* Custom bottom border - transparent on sides, filled in middle */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-b-secondary to-transparent"></div>
         {/* Left: Logo */}
         <div className="flex items-center text-font-logo flex-shrink-0 w-[140px] md:w-[180px]">
           <Link href="#" aria-label="Homepage" tabIndex={0} className="flex items-center gap-2 font-bold text-xl text-font-logo" onClick={handleLogoClick}>
@@ -109,7 +112,9 @@ const Navbar: React.FC = () => {
       </div>
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div id="mobile-menu" className="md:hidden bg-background border border-b-secondary">
+        <div id="mobile-menu" className="md:hidden relative">
+          {/* Custom bottom border - transparent on sides, filled in middle */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-b-secondary to-transparent"></div>
           <ul className="flex flex-col items-center gap-4 py-4">
             {menuItems.map((item) => (
               <li key={item.name}>
@@ -117,7 +122,7 @@ const Navbar: React.FC = () => {
                   href={item.href}
                   tabIndex={0}
                   aria-label={item.name}
-                  className="text-font-primary font-medium hover:text-menu-hover px-2 py-1 rounded transition-colors block"
+                  className="text-font-primary font-medium hover:text-menu-hover hover:underline px-2 py-1 rounded transition-colors block"
                   onClick={e => {
                     handleMenuClick(e, item.href, true);
                     setIsMenuOpen(false);

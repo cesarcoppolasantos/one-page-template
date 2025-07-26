@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
 const menuItems = [
+  { name: "Create Page", href: "/form" },
   { name: "Examples", href: "#examples" },
   { name: "Pricing", href: "#pricing" },
   { name: "FAQ", href: "#faq" },
+  
 ];
 
 const Footer = () => {
@@ -43,7 +45,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full border-t border-b-secondary bg-background py-4 bottom-0 left-0 z-50 shadow">
+    <footer className="w-full bg-gradient-to-r from-purple-900 to-gray-900 py-4 bottom-0 left-0 z-50 shadow relative">
+      {/* Custom top border - transparent on sides, filled in middle */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-b-secondary to-transparent"></div>
       <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center md:items-center justify-between px-4 gap-4">
         {/* Logo and Copyright */}
         <div className="flex flex-col items-center w-full md:w-auto">
