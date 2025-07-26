@@ -56,7 +56,7 @@ export default function Home() {
   ];
   
   return (
-    <main className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-8 bg-background">
+    <main className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       {/* Hero Section */}
       <section id="hero" className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-8 py-8 mb-8">
         {/* Left: Text Content */}
@@ -84,8 +84,8 @@ export default function Home() {
         </div>
       </section>
       {/* Social Proof Section */}
-      <section className="flex justify-center items-center h-16 mb-8 w-full max-w-5xl text-slate-400/80 [text-shadow:_0px_0px_10px_rgba(255,255,255,0.4)]">
-        <span className="text-md whitespace-nowrap text-center">Highlights section</span>
+      <section className="flex justify-center items-center h-16 mb-8 w-full max-w-5xl text-gray-400 text-sm [text-shadow:_0px_0px_5px_rgba(255,255,255,0.4)]">
+        <span className="text-md whitespace-nowrap text-center">Enjoy it too! +1852 Pages Created</span>
       </section>
       {/* Examples Section */}
       <section id="examples" className="w-full max-w-5xl flex flex-col items-center mb-20">
@@ -103,7 +103,7 @@ export default function Home() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="relative bg-white border-3 border-button-primary rounded-2xl shadow-lg flex flex-col items-center p-10 min-w-[360px] max-w-sm h-[420px] md:h-[460px]"
+              className="relative bg-purple-100 border-3 border-button-primary rounded-2xl shadow-lg flex flex-col items-center p-10 min-w-[360px] max-w-sm h-[420px] md:h-[460px]"
             >
               {plan.mostChosen && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
@@ -163,7 +163,7 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-font-primary mb-8">Frequently Asked Questions</h2>
         <div className="w-full flex flex-col gap-4">
           {faqs.map((faq, idx) => (
-            <details key={idx} className="bg-white border-3 border-button-primary rounded-lg p-4">
+            <details key={idx} className="bg-purple-100 border-3 border-button-primary rounded-lg p-4">
               <summary className="font-semibold text-gray-800 cursor-pointer rounded">
                 {faq.question}
               </summary>
