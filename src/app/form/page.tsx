@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FormData } from '@/types';
 
 export default function FormPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [formData, setFormData] = useState<FormData>({
     plan: '',
     signerName: '',
@@ -15,6 +17,20 @@ export default function FormPage() {
     image: null,
     text: ''
   });
+
+  // Set plan from URL parameter on component mount (only if no plan is currently selected)
+  useEffect(() => {
+    const planParam = searchParams.get('plan');
+    if (planParam) {
+      setFormData(prev => {
+        // Only set the plan if no plan is currently selected
+        if (!prev.plan) {
+          return { ...prev, plan: planParam };
+        }
+        return prev;
+      });
+    }
+  }, [searchParams]);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -111,14 +127,14 @@ export default function FormPage() {
 
     // If we get here, proceed with submission
     console.log('Form submitted:', formData);
-    router.push('/payment');
+    router.push(`/payment?plan=${formData.plan}`);
   };
 
   const handleConfirmSubmit = () => {
     setShowImageWarning(false);
     setShowMessageWarning(false);
     console.log('Form submitted:', formData);
-    router.push('/payment');
+    router.push(`/payment?plan=${formData.plan}`);
   };
 
   const handleCancelSubmit = () => {
@@ -169,17 +185,17 @@ export default function FormPage() {
                     <input
                       type="radio"
                       name="plan"
-                      value="premium"
-                      checked={formData.plan === 'premium'}
+                      value="pro"
+                      checked={formData.plan === 'pro'}
                       onChange={(e) => handleInputChange('plan', e.target.value)}
                       className="sr-only"
                     />
                     <div className={`p-4 rounded-lg border-2 transition-all ${
-                      formData.plan === 'premium' 
+                      formData.plan === 'pro' 
                         ? 'border-purple-500 bg-purple-500/20' 
                         : 'border-gray-600 bg-gray-800/50 hover:border-gray-500'
                     }`}>
-                      <div className="text-white font-medium">Premium Plan</div>
+                      <div className="text-white font-medium">Pro Plan</div>
                       <div className="text-gray-300 text-sm">$19.99</div>
                     </div>
                   </label>
@@ -199,10 +215,10 @@ export default function FormPage() {
                     type="text"
                     value={formData.signerName}
                     onChange={(e) => handleInputChange('signerName', e.target.value)}
-                    placeholder={formData.isAnonymous ? "Anonymous" : "Enter signer's name"}
-                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
-                      errors.signerName ? 'border-red-500' : 'border-gray-600'
-                    }`}
+                                          placeholder={formData.isAnonymous ? "Anonymous" : "Enter signer's name"}
+                      className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
+                        errors.signerName ? 'border-red-500' : 'border-gray-600'
+                      }`}
                     disabled={formData.isAnonymous}
                   />
                   <label className="flex items-center space-x-3 cursor-pointer">
@@ -229,10 +245,10 @@ export default function FormPage() {
                   type="text"
                   value={formData.recipientName}
                   onChange={(e) => handleInputChange('recipientName', e.target.value)}
-                  placeholder="Enter recipient's name"
-                  className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
-                    errors.recipientName ? 'border-red-500' : 'border-gray-600'
-                  }`}
+                                      placeholder="Enter recipient's name"
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
+                      errors.recipientName ? 'border-red-500' : 'border-gray-600'
+                    }`}
                 />
                 {errors.recipientName && (
                   <div className="text-red-400 text-sm mt-2">{errors.recipientName}</div>
@@ -253,10 +269,10 @@ export default function FormPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter your e-mail address"
-                  className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
-                    errors.email ? 'border-red-500' : 'border-gray-600'
-                  }`}
+                                      placeholder="Enter your e-mail address"
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
+                      errors.email ? 'border-red-500' : 'border-gray-600'
+                    }`}
                 />
                 {errors.email && (
                   <div className="text-red-400 text-sm mt-2">{errors.email}</div>
@@ -306,11 +322,11 @@ export default function FormPage() {
                 <textarea
                   value={formData.text}
                   onChange={(e) => handleInputChange('text', e.target.value)}
-                  placeholder="Write a message..."
-                  rows={4}
-                  className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors resize-none ${
-                    errors.content ? 'border-red-500' : 'border-gray-600'
-                  }`}
+                                      placeholder="Write a message..."
+                    rows={4}
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors resize-none ${
+                      errors.content ? 'border-red-500' : 'border-gray-600'
+                    }`}
                 />
                 {errors.content && (
                   <div className="text-red-400 text-sm mt-2">{errors.content}</div>

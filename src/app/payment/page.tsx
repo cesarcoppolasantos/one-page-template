@@ -1,9 +1,28 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function PaymentPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const plan = searchParams.get('plan') || 'Basic';
+  
+  // Debug log to see what plan is being received
+  console.log('Payment page - Plan from URL:', plan);
+
+  // Dynamic pricing based on plan
+  const getPlanPrice = (planName: string) => {
+    switch (planName.toLowerCase()) {
+      case 'basic':
+        return '$9.99';
+      case 'pro':
+        return '$19.99';
+      default:
+        return '$9.99'; // Default to Basic price
+    }
+  };
+
+  const planPrice = getPlanPrice(plan);
 
   const handlePayment = () => {
     // Handle payment logic here
@@ -14,7 +33,7 @@ export default function PaymentPage() {
   };
 
   const handleBackToForm = () => {
-    router.push('/form');
+    router.push(`/form?plan=${plan.toLowerCase()}`);
   };
 
   return (
@@ -51,19 +70,22 @@ export default function PaymentPage() {
 
           {/* Payment Details */}
           <div className="bg-gray-800/50 rounded-lg p-6 mb-4">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-gray-300">Plan:</span>
+              <span className="text-white font-semibold capitalize">{plan} Plan</span>
+            </div>
+            <div className="flex justify-between items-center mb-4">
               <span className="text-gray-300">Service:</span>
               <span className="text-white font-semibold">Page Creation</span>
             </div>
-            {/* Amount is hidden for now */}
-            {/* <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-4">
               <span className="text-gray-300">Amount:</span>
-              <span className="text-white font-semibold text-xl">$19.99</span>
-            </div> */}
+              <span className="text-white font-semibold text-xl">{planPrice}</span>
+            </div>
             <div className="border-t border-gray-600 pt-4">
               <div className="flex justify-between items-center">
                 <span className="text-gray-300">Total:</span>
-                <span className="text-white font-bold text-2xl">$19.99</span>
+                <span className="text-white font-bold text-2xl">{planPrice}</span>
               </div>
             </div>
           </div>
@@ -75,12 +97,23 @@ export default function PaymentPage() {
             </p>
           </div>
 
-          {/* Action Button */}
-          <div className="flex justify-center">
-                          <button
-                onClick={handlePayment}
-                className="cursor-pointer bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={handleBackToForm}
+              className="cursor-pointer bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Form
+              </div>
+            </button>
+            <button
+              onClick={handlePayment}
+              className="cursor-pointer bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+            >
               <div className="flex items-center justify-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
