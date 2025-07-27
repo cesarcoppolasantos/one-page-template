@@ -27,6 +27,10 @@ export default function Home() {
   const handleGetStarted = () => {
     router.push('/form');
   };
+
+  const handleChoosePlan = (planName: string) => {
+    router.push(`/form?plan=${planName.toLowerCase()}`);
+  };
   const plans: Plan[] = [
     {
       name: 'Basic',
@@ -133,6 +137,7 @@ export default function Home() {
               </ul>
               <button
                 type="button"
+                onClick={() => handleChoosePlan(plan.name)}
                 className="mt-auto bg-button-primary text-white font-semibold px-8 py-3 rounded hover:bg-button-hover cursor-pointer transition-colors text-lg"
                 aria-label={`Choose ${plan.name} plan`}
                 tabIndex={0}
