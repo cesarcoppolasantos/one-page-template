@@ -2,14 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { FormData } from '@/types';
 
 export default function FormPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
+  // Validate plan query parameter
+  const planParam = searchParams.get('plan');
+  const validPlans = ['basic', 'pro'];
+  const isValidPlan = planParam && validPlans.includes(planParam.toLowerCase());
+  
+  // If plan parameter is invalid or missing, show 404
+  if (!isValidPlan) {
+    notFound();
+  }
+  
+  const selectedPlan = planParam!.toLowerCase();
+  
   const [formData, setFormData] = useState<FormData>({
-    plan: '',
+    plan: selectedPlan,
     signerName: '',
     isAnonymous: false,
     recipientName: '',
@@ -17,20 +30,6 @@ export default function FormPage() {
     image: null,
     text: ''
   });
-
-  // Set plan from URL parameter on component mount (only if no plan is currently selected)
-  useEffect(() => {
-    const planParam = searchParams.get('plan');
-    if (planParam) {
-      setFormData(prev => {
-        // Only set the plan if no plan is currently selected
-        if (!prev.plan) {
-          return { ...prev, plan: planParam };
-        }
-        return prev;
-      });
-    }
-  }, [searchParams]);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -149,9 +148,13 @@ export default function FormPage() {
           Create Your Page
         </h1>
 
-        <h2 className="text-2xl text-white text-left mb-4">
-          Fill in the fields below to create a page
+        <h2 className="text-2xl text-white text-center mb-2">
+          Selected Plan: <span className="text-purple-400 capitalize">{selectedPlan}</span>
         </h2>
+
+        <h3 className="text-xl text-white text-left mb-4">
+          Fill in the fields below to create a page
+        </h3>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form Section */}
