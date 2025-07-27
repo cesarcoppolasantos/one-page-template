@@ -43,8 +43,13 @@ const Navbar: React.FC = () => {
         // If on other page, navigate to home and then scroll
         router.push(`/#${id}`);
       }
+    } else if (href === '/form') {
+      // Clear any previously selected plan from localStorage when accessing form
+      e.preventDefault();
+      localStorage.removeItem('selectedPlan');
+      router.push('/form');
     }
-    // For regular navigation links, let the default behavior handle it
+    // For other regular navigation links, let the default behavior handle it
   };
 
   const handleToggleMenu = () => setIsMenuOpen((prev) => !prev);

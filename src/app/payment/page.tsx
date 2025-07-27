@@ -1,14 +1,30 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const plan = searchParams.get('plan') || 'Basic';
+  const [plan, setPlan] = useState<string>('basic');
+  
+  // Check if there are any query parameters - if so, redirect to clean URL
+  useEffect(() => {
+    const hasQueryParams = searchParams.toString().length > 0;
+    if (hasQueryParams) {
+      router.replace('/payment');
+      return;
+    }
+    
+    // Get plan from localStorage
+    const storedPlan = localStorage.getItem('selectedPlan');
+    if (storedPlan) {
+      setPlan(storedPlan);
+    }
+  }, [searchParams, router]);
   
   // Debug log to see what plan is being received
-  console.log('Payment page - Plan from URL:', plan);
+  console.log('Payment page - Plan from localStorage:', plan);
 
   // Dynamic pricing based on plan
   const getPlanPrice = (planName: string) => {
@@ -33,7 +49,7 @@ export default function PaymentPage() {
   };
 
   const handleBackToForm = () => {
-    router.push(`/form?plan=${plan.toLowerCase()}`);
+    router.push('/form');
   };
 
   return (

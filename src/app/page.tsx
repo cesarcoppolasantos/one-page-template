@@ -25,11 +25,15 @@ export default function Home() {
   }, []);
 
   const handleGetStarted = () => {
+    // Clear any previously selected plan from localStorage
+    localStorage.removeItem('selectedPlan');
     router.push('/form');
   };
 
   const handleChoosePlan = (planName: string) => {
-    router.push(`/form?plan=${planName.toLowerCase()}`);
+    // Set the selected plan in localStorage
+    localStorage.setItem('selectedPlan', planName.toLowerCase());
+    router.push('/form');
   };
   const plans: Plan[] = [
     {

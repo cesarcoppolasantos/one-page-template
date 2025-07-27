@@ -2,27 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { notFound } from 'next/navigation';
 import { FormData } from '@/types';
 
 export default function FormPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [selectedPlan, setSelectedPlan] = useState<string>('basic');
   
-  // Validate plan query parameter
-  const planParam = searchParams.get('plan');
-  const validPlans = ['basic', 'pro'];
-  const isValidPlan = planParam && validPlans.includes(planParam.toLowerCase());
+  // Check if there are any query parameters - if so, redirect to clean URL
+  useEffect(() => {
+    const hasQueryParams = searchParams.toString().length > 0;
+    if (hasQueryParams) {
+      router.replace('/form');
+      return;
+    }
+    
+    // Get plan from localStorage or default to 'basic'
+    const storedPlan = localStorage.getItem('selectedPlan');
+    if (storedPlan && ['basic', 'pro'].includes(storedPlan.toLowerCase())) {
+      setSelectedPlan(storedPlan.toLowerCase());
+    }
+  }, [searchParams, router]);
   
-  // If plan parameter is invalid or missing, show 404
-  if (!isValidPlan) {
-    notFound();
-  }
-  
-  const selectedPlan = planParam!.toLowerCase();
+  // Update form data when selectedPlan changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, plan: selectedPlan }));
+  }, [selectedPlan]);
   
   const [formData, setFormData] = useState<FormData>({
-    plan: selectedPlan,
+    plan: 'basic',
     signerName: '',
     isAnonymous: false,
     recipientName: '',
@@ -38,19 +46,15 @@ export default function FormPage() {
 
   const handleInputChange = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
-    // Clear signer name error when anonymous is toggled
     if (field === 'isAnonymous' && errors.signerName) {
       setErrors(prev => ({ ...prev, signerName: '' }));
     }
-    // Clear signer name when anonymous is selected
     if (field === 'isAnonymous' && value === true) {
       setFormData(prev => ({ ...prev, signerName: '' }));
     }
-    // Clear content error when text is added or image is attached
     if ((field === 'text' || field === 'image') && errors.content) {
       setErrors(prev => ({ ...prev, content: '' }));
     }
@@ -65,7 +69,6 @@ export default function FormPage() {
         setImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
-      // Clear content error when image is attached
       if (errors.content) {
         setErrors(prev => ({ ...prev, content: '' }));
       }
@@ -75,29 +78,24 @@ export default function FormPage() {
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
 
-    // Plan validation
     if (!formData.plan) {
       newErrors.plan = 'Please select a plan';
     }
 
-    // Signer name validation (unless anonymous)
     if (!formData.isAnonymous && !formData.signerName.trim()) {
       newErrors.signerName = 'Please enter signer name or check anonymous';
     }
 
-    // Recipient name validation
     if (!formData.recipientName.trim()) {
       newErrors.recipientName = 'Please enter recipient name';
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Please enter your valid e-mail address';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid e-mail address';
     }
 
-    // Message or image validation
     if (!formData.text.trim() && !formData.image) {
       newErrors.content = 'Please write a message or attach an image';
     }
@@ -113,7 +111,6 @@ export default function FormPage() {
       return;
     }
 
-    // Check for warnings
     if (!formData.image && !showImageWarning) {
       setShowImageWarning(true);
       return;
@@ -124,16 +121,17 @@ export default function FormPage() {
       return;
     }
 
-    // If we get here, proceed with submission
+    localStorage.setItem('selectedPlan', formData.plan);
     console.log('Form submitted:', formData);
-    router.push(`/payment?plan=${formData.plan}`);
+    router.push('/payment');
   };
 
   const handleConfirmSubmit = () => {
     setShowImageWarning(false);
     setShowMessageWarning(false);
+    localStorage.setItem('selectedPlan', formData.plan);
     console.log('Form submitted:', formData);
-    router.push(`/payment?plan=${formData.plan}`);
+    router.push('/payment');
   };
 
   const handleCancelSubmit = () => {
@@ -148,19 +146,19 @@ export default function FormPage() {
           Create Your Page
         </h1>
 
-        <h2 className="text-2xl text-white text-center mb-2">
-          Selected Plan: <span className="text-purple-400 capitalize">{selectedPlan}</span>
-        </h2>
+        {formData.plan && (
+          <h2 className="text-2xl text-white text-center mb-2">
+            Selected Plan: <span className="text-purple-400 capitalize">{formData.plan}</span>
+          </h2>
+        )}
 
         <h3 className="text-xl text-white text-left mb-4">
           Fill in the fields below to create a page
         </h3>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Form Section */}
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Plan Selection */}
               <div>
                 <label className="block text-white font-semibold mb-3">
                   Select Plan
@@ -208,7 +206,6 @@ export default function FormPage() {
                 )}
               </div>
 
-              {/* Signer's Name with Anonymous Toggle */}
               <div>
                 <label className="block text-white font-semibold mb-3">
                   Signer&apos;s Name
@@ -218,10 +215,10 @@ export default function FormPage() {
                     type="text"
                     value={formData.signerName}
                     onChange={(e) => handleInputChange('signerName', e.target.value)}
-                                          placeholder={formData.isAnonymous ? "Anonymous" : "Enter signer's name"}
-                      className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
-                        errors.signerName ? 'border-red-500' : 'border-gray-600'
-                      }`}
+                    placeholder={formData.isAnonymous ? "Anonymous" : "Enter signer's name"}
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
+                      errors.signerName ? 'border-red-500' : 'border-gray-600'
+                    }`}
                     disabled={formData.isAnonymous}
                   />
                   <label className="flex items-center space-x-3 cursor-pointer">
@@ -239,7 +236,6 @@ export default function FormPage() {
                 )}
               </div>
 
-              {/* Recipient's Name */}
               <div>
                 <label className="block text-white font-semibold mb-3">
                   Recipient&apos;s Name
@@ -248,17 +244,16 @@ export default function FormPage() {
                   type="text"
                   value={formData.recipientName}
                   onChange={(e) => handleInputChange('recipientName', e.target.value)}
-                                      placeholder="Enter recipient's name"
-                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
-                      errors.recipientName ? 'border-red-500' : 'border-gray-600'
-                    }`}
+                  placeholder="Enter recipient's name"
+                  className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
+                    errors.recipientName ? 'border-red-500' : 'border-gray-600'
+                  }`}
                 />
                 {errors.recipientName && (
                   <div className="text-red-400 text-sm mt-2">{errors.recipientName}</div>
                 )}
               </div>
 
-              {/* Email Field */}
               <div>
                 <div className="mb-3">
                   <label className="block text-white font-semibold">
@@ -272,17 +267,16 @@ export default function FormPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                                      placeholder="Enter your e-mail address"
-                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
-                      errors.email ? 'border-red-500' : 'border-gray-600'
-                    }`}
+                  placeholder="Enter your e-mail address"
+                  className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
+                    errors.email ? 'border-red-500' : 'border-gray-600'
+                  }`}
                 />
                 {errors.email && (
                   <div className="text-red-400 text-sm mt-2">{errors.email}</div>
                 )}
               </div>
 
-              {/* Image Attachment */}
               <div>
                 <label className="block text-white font-semibold mb-3">
                   Image Attachment
@@ -317,7 +311,6 @@ export default function FormPage() {
                 </div>
               </div>
 
-              {/* Text Field */}
               <div>
                 <label className="block text-white font-semibold mb-3">
                   Your Message
@@ -325,18 +318,17 @@ export default function FormPage() {
                 <textarea
                   value={formData.text}
                   onChange={(e) => handleInputChange('text', e.target.value)}
-                                      placeholder="Write a message..."
-                    rows={4}
-                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors resize-none ${
-                      errors.content ? 'border-red-500' : 'border-gray-600'
-                    }`}
+                  placeholder="Write a message..."
+                  rows={4}
+                  className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors resize-none ${
+                    errors.content ? 'border-red-500' : 'border-gray-600'
+                  }`}
                 />
                 {errors.content && (
                   <div className="text-red-400 text-sm mt-2">{errors.content}</div>
                 )}
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 className="w-full cursor-pointer bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 transform hover:scale-105"
@@ -346,108 +338,85 @@ export default function FormPage() {
             </form>
           </div>
 
-          {/* Preview Section */}
           <div className="flex flex-col items-center">
-            {/* Preview Title */}
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-white mb-2">Page Preview</h2>
               <p className="text-gray-300 text-sm">Generated from your form</p>
             </div>
             
             <div className="relative">
-              {/* Phone Frame */}
               <div className="w-80 h-[600px] rounded-[3rem] p-1 shadow-2xl bg-gradient-to-r from-gray-600 via-gray-700 to-gray-900">
                 <div className="w-full h-full bg-gradient-to-t from-purple-900 to-gray-900 rounded-[2.5rem] p-3">
-                  {/* Phone Screen */}
                   <div className="w-full h-full bg-gray rounded-[2rem] overflow-hidden relative">
-                  {/* Browser Header */}
-                  <div className="bg-gray-100 h-12 flex items-center justify-between px-4 border-b">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="bg-white rounded-lg px-3 py-1 text-xs text-gray-600 border">
-                        https://myapp.com/...
+                    <div className="bg-gray-100 h-12 flex items-center justify-between px-4 border-b">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      </div>
+                      <div className="flex-1 mx-4">
+                        <div className="bg-white rounded-lg px-3 py-1 text-xs text-gray-600 border">
+                          https://myapp.com/...
+                        </div>
+                      </div>
+                      <div className="w-6 h-6">
+                        <svg className="w-full h-full text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                       </div>
                     </div>
-                    <div className="w-6 h-6">
-                      <svg className="w-full h-full text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
+
+                    <div className="p-6 space-y-4">
+                      {formData.signerName && !formData.isAnonymous && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">From:</div>
+                          <div className="font-semibold text-gray-800">{formData.signerName}</div>
+                        </div>
+                      )}
+                      {formData.isAnonymous && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">From:</div>
+                          <div className="font-semibold text-gray-800">Anonymous</div>
+                        </div>
+                      )}
+
+                      {formData.recipientName && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600">To:</div>
+                          <div className="font-semibold text-gray-800">{formData.recipientName}</div>
+                        </div>
+                      )}
+
+                      {imagePreview && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600 mb-2">Attached Image:</div>
+                          <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded" />
+                        </div>
+                      )}
+
+                      {formData.text && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <div className="text-sm text-gray-600 mb-2">Message:</div>
+                          <div className="text-gray-800 whitespace-pre-wrap">{formData.text}</div>
+                        </div>
+                      )}
+
+                      {!formData.signerName && !formData.recipientName && !formData.text && !imagePreview && (
+                        <div className="text-center text-gray-500 py-8">
+                          <div className="text-4xl mb-2">📄</div>
+                          <div>Fill out the form to see preview</div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Document Content */}
-                  <div className="p-6 space-y-4">
-
-                    {/* Plan Info */}
-                    {/* {formData.plan && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">Selected Plan:</div>
-                        <div className="font-semibold text-gray-800 capitalize">{formData.plan}</div>
-                      </div>
-                    )} */}
-
-                    {/* Signer Info */}
-                    {formData.signerName && !formData.isAnonymous && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">From:</div>
-                        <div className="font-semibold text-gray-800">{formData.signerName}</div>
-                      </div>
-                    )}
-                    {formData.isAnonymous && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">From:</div>
-                        <div className="font-semibold text-gray-800">Anonymous</div>
-                      </div>
-                    )}
-
-                    {/* Recipient Info */}
-                    {formData.recipientName && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600">To:</div>
-                        <div className="font-semibold text-gray-800">{formData.recipientName}</div>
-                      </div>
-                    )}
-
-                    {/* Image Preview */}
-                    {imagePreview && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-2">Attached Image:</div>
-                        <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded" />
-                      </div>
-                    )}
-
-                    {/* Text Content */}
-                    {formData.text && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-2">Message:</div>
-                        <div className="text-gray-800 whitespace-pre-wrap">{formData.text}</div>
-                      </div>
-                    )}
-
-                    {/* Placeholder when no data */}
-                    {!formData.plan && !formData.signerName && !formData.recipientName && !formData.text && !imagePreview && (
-                      <div className="text-center text-gray-500 py-8">
-                        <div className="text-4xl mb-2">📄</div>
-                        <div>Fill out the form to see preview</div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
-            </div>
-
-              {/* Phone Shadow */}
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-64 h-4 bg-black/20 rounded-full blur-xl"></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Image Warning Modal */}
       {showImageWarning && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg p-6 max-w-md mx-4">
@@ -478,7 +447,6 @@ export default function FormPage() {
         </div>
       )}
 
-      {/* Message Warning Modal */}
       {showMessageWarning && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg p-6 max-w-md mx-4">
@@ -510,4 +478,4 @@ export default function FormPage() {
       )}
     </div>
   );
-} 
+}

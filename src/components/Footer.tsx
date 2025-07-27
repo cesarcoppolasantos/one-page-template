@@ -41,6 +41,11 @@ const Footer = () => {
         // If on other page, navigate to home and then scroll
         router.push(`/#${id}`);
       }
+    } else if (href === '/form') {
+      // Clear any previously selected plan from localStorage when accessing form
+      e.preventDefault();
+      localStorage.removeItem('selectedPlan');
+      router.push('/form');
     }
   };
 
