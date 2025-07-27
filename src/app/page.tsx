@@ -2,8 +2,11 @@
 
 import { Plan, FAQ } from '@/types';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
   useEffect(() => {
     // Handle hash navigation when page loads
     if (typeof window !== 'undefined') {
@@ -20,6 +23,10 @@ export default function Home() {
       }
     }
   }, []);
+
+  const handleGetStarted = () => {
+    router.push('/form');
+  };
   const plans: Plan[] = [
     {
       name: 'Basic',
@@ -56,7 +63,7 @@ export default function Home() {
   ];
   
   return (
-    <main className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+            <main className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       {/* Hero Section */}
       <section id="hero" className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-8 py-8 mb-8">
         {/* Left: Text Content */}
@@ -70,6 +77,7 @@ export default function Home() {
           <div className="flex justify-center w-full">
             <button
               type="button"
+              onClick={handleGetStarted}
               className="bg-button-primary text-white font-semibold px-10 py-4 rounded shadow cursor-pointer hover:bg-button-hover transition-colors text-xl"
               aria-label="Get Started"
               tabIndex={0}
@@ -150,6 +158,7 @@ export default function Home() {
         <div className="flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">
           <button
             type="button"
+            onClick={handleGetStarted}
             className="bg-button-primary text-white font-semibold px-8 py-3 rounded shadow hover:bg-button-hover cursor-pointer transition-colors text-lg"
             aria-label="Get Started Now"
             tabIndex={0}
