@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
             tabIndex={0}
-            className="inline-flex items-center justify-center p-2 rounded"
+            className="inline-flex items-center justify-center cursor-pointer p-2 rounded"
             type="button"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
