@@ -59,6 +59,9 @@ const Navbar: React.FC = () => {
     }
   };
 
+  // Check if we're on the /fy page
+  const isFyPage = pathname === '/fy';
+
   return (
     <nav className="w-full bg-gradient-to-l from-purple-900 to-gray-900 relative">
       {/* Navbar Bar */}
@@ -66,57 +69,63 @@ const Navbar: React.FC = () => {
         {/* Custom bottom border - transparent on sides, filled in middle */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-b-secondary to-transparent"></div>
         {/* Left: Logo */}
-        <div className="flex items-center text-font-logo flex-shrink-0 w-[140px] md:w-[180px]">
+        <div className={`flex items-center text-font-logo flex-shrink-0 ${isFyPage ? 'w-full justify-center' : 'w-[140px] md:w-[180px]'}`}>
           <Link href="#" aria-label="Homepage" tabIndex={0} className="flex items-center gap-2 font-bold text-xl text-font-logo" onClick={handleLogoClick}>
             <img src="/logo.svg" alt="MyApp Logo" className="w-16 h-16 object-contain" />
             <span className="mt-3">MyApp</span>
             <span className="sr-only">Logo</span>
           </Link>
         </div>
-        {/* Center: Desktop Menu */}
-        <div className="hidden md:flex flex-1 justify-center">
-          <ul className="flex gap-8">
-            {menuItems.map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  tabIndex={0}
-                  aria-label={item.name}
-                  className="text-font-primary font-medium hover:text-menu-hover px-2 py-1 rounded transition-colors"
-                  onClick={e => handleMenuClick(e, item.href)}
-                >
-                  {item.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        {/* Right: Spacer for symmetry */}
-        <div className="hidden md:flex items-center flex-shrink-0 w-[140px] md:w-[180px]" />
-        {/* Mobile Hamburger */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 md:hidden flex items-center gap-2">
-          <button
-            onClick={handleToggleMenu}
-            onKeyDown={handleKeyDown}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-            tabIndex={0}
-            className="inline-flex items-center justify-center cursor-pointer p-2 rounded"
-            type="button"
-          >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
+        {/* Center: Desktop Menu - Hidden on /fy page */}
+        {!isFyPage && (
+          <div className="hidden md:flex flex-1 justify-center">
+            <ul className="flex gap-8">
+              {menuItems.map((item) => (
+                <li key={item.name}>
+                  <a
+                    href={item.href}
+                    tabIndex={0}
+                    aria-label={item.name}
+                    className="text-font-primary font-medium hover:text-menu-hover px-2 py-1 rounded transition-colors"
+                    onClick={e => handleMenuClick(e, item.href)}
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* Right: Spacer for symmetry - Hidden on /fy page */}
+        {!isFyPage && (
+          <div className="hidden md:flex items-center flex-shrink-0 w-[140px] md:w-[180px]" />
+        )}
+        {/* Mobile Hamburger - Hidden on /fy page */}
+        {!isFyPage && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 md:hidden flex items-center gap-2">
+            <button
+              onClick={handleToggleMenu}
+              onKeyDown={handleKeyDown}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              tabIndex={0}
+              className="inline-flex items-center justify-center cursor-pointer p-2 rounded"
+              type="button"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
-      {/* Mobile Menu */}
-      {isMenuOpen && (
+      {/* Mobile Menu - Hidden on /fy page */}
+      {!isFyPage && isMenuOpen && (
         <div id="mobile-menu" className="md:hidden relative">
           {/* Custom bottom border - transparent on sides, filled in middle */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-b-secondary to-transparent"></div>
