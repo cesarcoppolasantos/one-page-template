@@ -117,7 +117,7 @@ export default function PaymentPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleBackToForm}
-              className="cursor-pointer bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="cursor-pointer bg-gray-500 hover:bg-gray-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
               <div className="flex items-center justify-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
