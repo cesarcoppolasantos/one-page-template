@@ -109,7 +109,10 @@ export default function PaymentPage() {
           {/* Payment Instruction */}
           <div className="text-center mb-4">
             <p className="text-gray-300 text-lg leading-relaxed">
-              To finish, make the payment by clicking the button below.
+              To finish, make the payment by clicking the <span className="italic">Make Payment</span> button below.
+            </p>
+            <p className="text-gray-300 text-sm leading-relaxed italic">
+              When you click, you will be redirected to the payment screen.
             </p>
           </div>
 
