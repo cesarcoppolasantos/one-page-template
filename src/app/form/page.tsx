@@ -146,18 +146,20 @@ export default function FormPage() {
           Create Your Page
         </h1>
 
-        {formData.plan && (
-          <h2 className="text-2xl text-white text-center mb-2">
-            Selected Plan: <span className="text-purple-400 capitalize">{formData.plan}</span>
-          </h2>
-        )}
-
-        <h3 className="text-xl text-white text-left mb-4">
-          Fill in the fields below to create a page
+        <h3 className="text-xl text-white text-center mb-8">
+              Fill in the fields below to create a page
         </h3>
+
+        
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+            
+          {formData.plan && (
+            <h2 className="text-2xl text-white text-center mb-2">
+              Selected Plan: <span className="text-purple-400 capitalize">{formData.plan}</span>
+            </h2>
+          )}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-white font-semibold mb-3">
@@ -216,20 +218,26 @@ export default function FormPage() {
                     value={formData.signerName}
                     onChange={(e) => handleInputChange('signerName', e.target.value)}
                     placeholder={formData.isAnonymous ? "Anonymous" : "Enter signer's name"}
+                    maxLength={30}
                     className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
                       errors.signerName ? 'border-red-500' : 'border-gray-600'
                     }`}
                     disabled={formData.isAnonymous}
                   />
-                  <label className="flex items-center space-x-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.isAnonymous}
-                      onChange={(e) => handleInputChange('isAnonymous', e.target.checked)}
-                      className="w-4 h-4 text-purple-500 bg-gray-800 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
-                    />
-                    <span className="text-white">Keep anonymous</span>
-                  </label>
+                  <div className="flex justify-between items-center">
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.isAnonymous}
+                        onChange={(e) => handleInputChange('isAnonymous', e.target.checked)}
+                        className="w-4 h-4 text-purple-500 bg-gray-800 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
+                      />
+                      <span className="text-white">Keep anonymous</span>
+                    </label>
+                    <div className="text-gray-400 text-sm">
+                      {formData.signerName.length}/30
+                    </div>
+                  </div>
                 </div>
                 {errors.signerName && (
                   <div className="text-red-400 text-sm mt-2">{errors.signerName}</div>
@@ -245,13 +253,19 @@ export default function FormPage() {
                   value={formData.recipientName}
                   onChange={(e) => handleInputChange('recipientName', e.target.value)}
                   placeholder="Enter recipient's name"
+                  maxLength={30}
                   className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors ${
                     errors.recipientName ? 'border-red-500' : 'border-gray-600'
                   }`}
                 />
-                {errors.recipientName && (
-                  <div className="text-red-400 text-sm mt-2">{errors.recipientName}</div>
-                )}
+                <div className="flex justify-between items-center mt-2">
+                  {errors.recipientName && (
+                    <div className="text-red-400 text-sm">{errors.recipientName}</div>
+                  )}
+                  <div className="text-gray-400 text-sm ml-auto">
+                    {formData.recipientName.length}/30
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -259,9 +273,10 @@ export default function FormPage() {
                   <label className="block text-white font-semibold">
                     Your E-mail
                   </label>
-                  <p className="text-gray-300 text-sm italic">
-                    (to receive the Page Link and QR Code)
-                  </p>
+                  <div className="flex items-center gap-2 mt-2 text-yellow-300 text-sm">
+                    <span className="text-orange-400">⚠️</span>
+                    <span>Please, enter a valid e-mail address to receive the Page Link and QR Code</span>
+                  </div>
                 </div>
                 <input
                   type="email"
@@ -320,13 +335,19 @@ export default function FormPage() {
                   onChange={(e) => handleInputChange('text', e.target.value)}
                   placeholder="Write a message..."
                   rows={4}
+                  maxLength={500}
                   className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors resize-none ${
                     errors.content ? 'border-red-500' : 'border-gray-600'
                   }`}
                 />
-                {errors.content && (
-                  <div className="text-red-400 text-sm mt-2">{errors.content}</div>
-                )}
+                <div className="flex justify-between items-center mt-2">
+                  {errors.content && (
+                    <div className="text-red-400 text-sm">{errors.content}</div>
+                  )}
+                  <div className="text-gray-400 text-sm ml-auto">
+                    {formData.text.length}/500
+                  </div>
+                </div>
               </div>
 
               <button
@@ -347,7 +368,7 @@ export default function FormPage() {
             <div className="relative">
               <div className="w-80 h-[600px] rounded-[3rem] p-1 shadow-2xl bg-gradient-to-r from-gray-600 via-gray-700 to-gray-900">
                 <div className="w-full h-full bg-gradient-to-t from-purple-900 to-gray-900 rounded-[2.5rem] p-3">
-                  <div className="w-full h-full bg-gray rounded-[2rem] overflow-hidden relative">
+                  <div className="w-full h-full bg-gray rounded-[2rem] overflow-hidden relative flex flex-col">
                     <div className="bg-gray-100 h-12 flex items-center justify-between px-4 border-b">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -365,51 +386,106 @@ export default function FormPage() {
                         </svg>
                       </div>
                     </div>
+                    
+                    {/* Content Area */}
+                    <div className="flex-1 flex items-center justify-center relative" style={{
+                      padding: Math.max(8, Math.min(32, (formData.text?.length || 0) / 50)) + 'px'
+                    }}>
+                      {/* Floating particles background */}
+                      <div className="absolute inset-0 overflow-hidden">
+                        <div className="absolute top-4 left-2 w-0.5 h-0.5 bg-purple-400 rounded-full"></div>
+                        <div className="absolute top-8 right-4 w-0.25 h-0.25 bg-purple-300 rounded-full"></div>
+                        <div className="absolute bottom-8 left-4 w-0.375 h-0.375 bg-purple-300 rounded-full"></div>
+                        <div className="absolute top-12 left-1/3 w-0.25 h-0.25 bg-purple-200 rounded-full"></div>
+                        <div className="absolute bottom-12 right-1/3 w-0.5 h-0.5 bg-purple-200 rounded-full"></div>
+                        <div className="absolute top-16 left-1/4 w-0.375 h-0.375 bg-purple-400 rounded-full"></div>
+                        <div className="absolute top-6 right-1/4 w-0.25 h-0.25 bg-purple-300 rounded-full"></div>
+                        <div className="absolute bottom-16 left-1/2 w-0.5 h-0.5 bg-purple-200 rounded-full"></div>
+                        <div className="absolute top-3 right-1/3 w-0.375 h-0.375 bg-purple-300 rounded-full"></div>
+                        <div className="absolute bottom-4 right-1/2 w-0.25 h-0.25 bg-purple-400 rounded-full"></div>
+                        <div className="absolute top-14 left-1/6 w-0.25 h-0.25 bg-purple-200 rounded-full"></div>
+                        <div className="absolute bottom-14 right-1/6 w-0.375 h-0.375 bg-purple-300 rounded-full"></div>
+                        <div className="absolute top-10 left-2/3 w-0.5 h-0.5 bg-purple-400 rounded-full"></div>
+                        <div className="absolute bottom-10 left-1/6 w-0.25 h-0.25 bg-purple-200 rounded-full"></div>
+                        <div className="absolute top-5 right-1/6 w-0.375 h-0.375 bg-purple-300 rounded-full"></div>
+                      </div>
+                      
+                      <div className="bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-4 border border-white/20 max-w-56 shadow-2xl transform hover:scale-105 transition-all duration-500 relative z-10 flex-shrink-0">
+                        {/* Animated border glow */}
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 via-purple-400/20 to-purple-500/20 blur-xl"></div>
+                        
+                        <div className="relative space-y-0">
+                      {/* Signer's Name */}
+                      <div className="text-left transform hover:translate-x-1 transition-transform duration-300">
+                        <div className="text-white text-[12px] font-medium bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent flex justify-start items-center">
+                          <span className="text-purple-300 text-[12px] w-6 text-right flex items-center justify-end">
+                            <span className="">✨</span>From:
+                          </span>
+                          <span className="min-w-12 ml-2 text-left whitespace-nowrap truncate font-medium">
+                            {formData.isAnonymous ? 'Anonymous' : formData.signerName}
+                          </span>
+                        </div>
+                      </div>
 
-                    <div className="p-6 space-y-4">
-                      {formData.signerName && !formData.isAnonymous && (
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <div className="text-sm text-gray-600">From:</div>
-                          <div className="font-semibold text-gray-800">{formData.signerName}</div>
+                      {/* Recipient's Name */}
+                      <div className="text-left transform hover:translate-x-1 transition-transform duration-300 mb-0">
+                        <div className="text-white text-[12px] mb-2 font-medium bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent flex justify-start items-center">
+                          <span className="text-purple-300 text-[12px] w-6 text-right flex items-center justify-end">
+                            <span className="mr-1">💌</span>To:
+                          </span>
+                          <span className="min-w-12 ml-2 text-left whitespace-nowrap truncate font-medium">
+                            {formData.recipientName}
+                          </span>
                         </div>
-                      )}
-                      {formData.isAnonymous && (
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <div className="text-sm text-gray-600">From:</div>
-                          <div className="font-semibold text-gray-800">Anonymous</div>
-                        </div>
-                      )}
+                      </div>
 
-                      {formData.recipientName && (
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <div className="text-sm text-gray-600">To:</div>
-                          <div className="font-semibold text-gray-800">{formData.recipientName}</div>
-                        </div>
-                      )}
+                      {/* Animated Separator */}
+                      <div className="relative">
+                        <div className="w-6 h-px mb-2 bg-gradient-to-r from-transparent via-purple-400 to-transparent mx-auto"></div>
+                        <div className="absolute inset-0 w-6 h-px bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 mx-auto animate-pulse"></div>
+                      </div>
 
-                      {imagePreview && (
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <div className="text-sm text-gray-600 mb-2">Attached Image:</div>
-                          <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded" />
+                      {/* Image Display */}
+                      <div className="text-center mb-2 transform hover:scale-105 transition-transform duration-300">              
+                        <div className="relative group">
+                          <img 
+                            src={imagePreview || "https://placehold.co/400x300?text=Your+Image+Here..."} 
+                            alt="Letter attachment" 
+                            className="w-full max-w-24 h-auto mx-auto rounded-lg shadow-lg group-hover:shadow-2xl transition-shadow duration-300 object-cover object-center"
+                            style={{
+                              maxHeight: '50px',
+                              width: '100%',
+                              height: 'auto',
+                              objectFit: 'cover',
+                              objectPosition: 'center'
+                            }}
+                          />
                         </div>
-                      )}
+                      </div>
 
-                      {formData.text && (
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <div className="text-sm text-gray-600 mb-2">Message:</div>
-                          <div className="text-gray-800 whitespace-pre-wrap">{formData.text}</div>
+                      {/* Message */}
+                      <div className="text-center mb-4 transform hover:scale-105 transition-transform duration-300">
+                        <div className="text-white text-[12px] whitespace-pre-wrap leading-tight font-bold break-words max-w-full overflow-hidden px-1">
+                          {formData.text || "Your message here..."}
                         </div>
-                      )}
+                      </div>
 
-                      {!formData.signerName && !formData.recipientName && !formData.text && !imagePreview && (
-                        <div className="text-center text-gray-500 py-8">
-                          <div className="text-4xl mb-2">📄</div>
-                          <div>Fill out the form to see preview</div>
+                      {/* Date Created */}
+                      <div className="text-center transform hover:scale-105 transition-transform duration-300 mt-1">
+                        <div className="text-gray-300 text-[12px] flex justify-center items-center">
+                          <span className="text-purple-300 text-[12px] mr-2">📅</span>
+                          <span className="italic">Send on {new Date().toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}</span>
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
+              </div>
               </div>
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-64 h-4 bg-black/20 rounded-full blur-xl"></div>
             </div>
